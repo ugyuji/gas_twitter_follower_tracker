@@ -9,14 +9,15 @@ function main(cron) {
       pickedItems.push(elem);
       screenName = elem[0];
       followersCount = getFollowersCount(screenName)
-      slackChannel = elem[2].replace('https://flag-pictures.slack.com/archives/', '');
+      slackChannel = elem[2].replace(/<#(\S+)>/, '$1');
+      mention = elem[4];
       if (!Number.isInteger(followersCount)) {
-        var text = `\`フォロワー数のお知らせ\`\n<https://twitter.com/${screenName}|${screenName}> のフォロワー数取得中にエラーが発生しました。\n\`\`\`${followersCount}\`\`\``;
+        var text = `${mention}\n\`フォロワー数のお知らせ\`\n<https://twitter.com/${screenName}|${screenName}> のフォロワー数取得中にエラーが発生しました。\n\`\`\`${followersCount}\`\`\``;
         failedItems.push(elem);
       } else {
         const now = new Date();
         const updatedAt = Utilities.formatDate(now, 'Asia/Tokyo', 'yyyy/MM/dd HH:mm:ss');
-        var text = `\`フォロワー数のお知らせ\`\n• 取得日時: ${updatedAt}\n• アカウント: <https://twitter.com/${screenName}|${screenName}>\n• フォロワー数: ${followersCount}`;
+        var text = `${mention}\n\`フォロワー数のお知らせ\`\n• 取得日時: ${updatedAt}\n• アカウント: <https://twitter.com/${screenName}|${screenName}>\n• フォロワー数: ${followersCount}`;
       }
       const response = sendNotificationToSlackChannnel(slackChannel, text);
       if (!response.ok) {
